@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hand.dao.FilmMapper">
+	
+	<!-- 插入操作 -->
+	<insert id="savaFilm" parameterType="Film">
+		insert into film(title,description,language_id) values(#{title},#{description},#{language_id})
+	</insert>
+	
+	
+	<!-- 查询film总条数 -->
+	<select id="findSum" resultType="Long">
+		select count(*) from film
+	</select>
+	
+	<!-- 一次查询10条film信息 -->
+	<select id="findByCound_ten" parameterType="int" resultType="Film">
+		select film_id,title,description,name languageName from film,language where film.language_id = language.language_id and film_id limit #{curPage},10
+	</select>
+	
+	<!-- 一次查询20条film信息 -->
+	<select id="findByCound_twenty" parameterType="int" resultType="Film">
+		select film_id,title,description,name languageName from film,language where film.language_id = language.language_id and film_id limit #{curPage},20
+	</select>
+	
+	<!-- 一次查询50条film信息 -->
+	<select id="findByCound_fifty" parameterType="int" resultType="Film">
+		select film_id,title,description,name languageName from film,language where film.language_id = language.language_id and film_id limit #{curPage},50
+	</select>
+	
+	<!-- 删除 -->
+	<delete id="deleteById" parameterType="Long">
+		delete from film where film_id=#{film_id}
+	</delete>
+	
+	<!-- 查询一条film数据 -->
+	<select id="findById" parameterType="Long" resultType="Film">
+		select * from film where film_id=#{film_id}
+	</select>
+	
+	<!-- 修改一条film数据 -->
+	<update id="updateByFilm" parameterType="Film">
+		 update film set title=#{title},description=#{description},language_id=#{language_id} where film_id=#{film_id};
+	</update>
+	
+</mapper>	
+		

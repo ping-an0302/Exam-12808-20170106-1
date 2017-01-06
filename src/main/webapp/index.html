@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>index.html</title>
+	<link rel="stylesheet" href="https://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script id="row" type="application/html">
+        			<tr>
+						<td></td><td></td><td></td><td></td>
+						<td>
+							<div class="btn-group">
+								<button data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
+								<ul class="dropdown-menu">
+									<li><a href="#">删除</a></li>
+									<li> <a href="#">修改</a></li>
+								</ul>
+							</div>
+						</td>
+					</tr>
+    </script>
+	<script type="text/javascript">
+			//定义一个全局变量
+			var query = {
+					datasum: 0,
+					pageCount: 0,
+					page: 1,
+		            pageSize: 10
+			}
+	
+			$(function(){
+				$.ajax({
+					   url:"film/showfirst",
+					   type:"post",
+					   data:{},
+					   dataType:"json",
+					   success:function(date){
+						   //调用刷新页面函数
+						   filmrefresh(date);
+						   //调用分页按钮函数
+						   pagefunction();
+					   }
+					});
+		    });
+	</script>
+	<script type="text/javascript">
+		function filmrefresh(date) {
+				//清空操作
+			    $("tbody").empty();
+			   //总数据
+			   query.datasum = date.sum;
+			   query.pageCount = Math.ceil(query.datasum/query.pageSize);
+			   var list = date.list;
+			   $.each(list,function(i,e){
+				   var $tr = $($('#row').html()).clone();
+				   $tr.children('td').eq(0).text(e.film_id);
+				   $tr.children('td').eq(1).text(e.title);
+				   $tr.children('td').eq(2).text(e.description);
+				   $tr.children('td').eq(3).text(e.languageName);
+				   $tr.children('td').eq(4).children('div').children('ul').children('li').eq(0).children('a').attr("href","film/delete?film_id="+e.film_id);
+				   $tr.children('td').eq(4).children('div').children('ul').children('li').eq(1).children('a').attr("href","updateinfo.html?film_id="+e.film_id);
+				   
+				   $("tbody").append($tr);
+			   });
+		}
+	
+	
+	</script>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix" style="margin-top: 20px">
+		<form action="">
+			<div class="form-group col-sm-5">
+			    <label for="firstname" class="col-sm-4 control-label text-right">标题</label>
+			    <div class="col-sm-8">
+			        <input type="text" class="form-control" id="firstname" placeholder="请输入标题">
+			    </div>
+			</div>
+			<div class="form-group col-sm-5">
+			    <label for="lastname" class="col-sm-4 control-label text-right">语言</label>
+			    <div class="col-sm-8">
+			        <input type="text" class="form-control" id="lastname" placeholder="请输入语言">
+			    </div>
+			</div>
+			<div class="form-group col-sm-2">
+			    <div class="col-sm-offset-2 col-sm-10 col-sm-pull-1 text-right">
+			        <button id="query" class="btn btn-info">查询</button>
+			    </div>
+			</div>
+    	</form>
+	</div>
+	
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<table class="table table-hover table-striped table-condensed">
+				<thead>
+					<tr>
+						<th>编号</th>
+						<th>标题</th>
+						<th>内容</th>
+						<th>语言</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+	
+	
+	<div class="row clearfix">
+		<div class="col-md-3 column"></div>
+		<div class="col-md-6 column">
+			<ul class="pagination" id="pagination">
+				<li><a href="#">首页</a></li>
+			    <li><a href="#">尾页</a></li>
+			</ul>
+		</div>
+		<div class="col-md-3 column">
+		
+			<label for="firstname" class="col-sm-4 control-label text-right" style="margin-top: 7%">一页显示</label>
+			<div class="col-sm-5" style="margin-top: 5%">
+	            <select id="pageSize"  class="form-control">
+	                <option value="10" selected>10</option>
+	                <option value="20">20</option>
+	                <option value="50">50</option>
+	            </select>
+	        </div>
+	        <label for="lastname" class="col-sm-1 control-label text-left" style="margin-top: 7%">条</label>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	//初始化按钮
+	function pagefunction() {
+		$('#pagination').children('li.page').remove();
+        var template = "<li class='page'><a href='#'></a></li>"
+        if (query.pageCount<9) {
+        	for (var int = 1; int <= sum; int++) {
+        		forpagination(int);
+	        }
+		}else if(Number(query.page)>=5&&Number(query.pageCount)-Number(query.page)>=4){
+	        for (var int = query.page-4; int < Number(query.page)+5; int++) {
+	        	forpagination(int);
+	        }
+		}else if(Number(query.pageCount)-Number(query.page)<4){
+			for (var int = Number(query.pageCount)-8; int < Number(query.pageCount)+1; int++) {
+				forpagination(int);
+	        }
+		}else{
+	        for (var int = 1; int < 10; int++) {
+	        	forpagination(int);
+	        }
+		}
+        //分页按钮刷新函数
+        function forpagination(int){
+        	var $first = $("#pagination").children('li:last');
+            var $template = $(template);
+            $template.children('a').text(int);
+            //当前页添加样式
+            if (int == query.page) {
+                $template.addClass('active');
+            }
+            $first.before($template);
+        }
+	}
+	
+</script>
+<script type="text/javascript">
+		//收尾页绑定事件
+		$("li").on("click",function(){
+			var page = $(this).children('a').text();
+			query.pageSize = $("#pageSize").val();
+			if(page=="首页"){
+				query.page = 1;
+			}else{
+				query.page = query.pageCount;
+			}
+			//发送ajax请求
+			$.ajax({
+				   url:"film/show",
+				   type:"post",
+				   data:query,
+				   dataType:"json",
+				   success:function(date){
+					   //调用刷新页面函数
+					   filmrefresh(date);
+					   //调用分页按钮函数
+					   pagefunction();
+				   }
+				});
+		});
+		
+		
+		//页数绑定事件
+		$("ul").on("click",".page" ,function(){
+			//当前页
+			var page = $(this).children('a').text();
+			//重新赋值要访问页码和容量
+			query.pageSize = $("#pageSize").val();
+			query.page = page;
+			//发送ajax请求
+			$.ajax({
+				   url:"film/show",
+				   type:"post",
+				   data:query,
+				   dataType:"json",
+				   success:function(date){
+					   //调用刷新页面函数
+					   filmrefresh(date);
+					   //调用分页按钮函数
+					   pagefunction();
+				   }
+				});
+		});
+</script>
+</body>
+</html>
